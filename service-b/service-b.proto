@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package demo;
+
+service ServiceB {
+  rpc ProcessData (ProcessRequest) returns (ProcessResponse);
+}
+
+message ProcessRequest {
+  string input = 1;
+}
+
+message ProcessResponse {
+  string output = 1;
+}
+

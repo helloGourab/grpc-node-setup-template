@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package demo;
+
+service ServiceA {
+  rpc GetData (DataRequest) returns (DataResponse);
+  rpc GetProcessedData (DataRequest) returns (DataResponse); // calls ServiceB internally
+}
+
+message DataRequest {
+  string query = 1;
+}
+
+message DataResponse {
+  string result = 1;
+}
