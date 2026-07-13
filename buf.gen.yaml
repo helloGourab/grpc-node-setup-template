@@ -1,0 +1,11 @@
+version: v2
+plugins:
+  # Base types for JavaScript
+  - remote: buf.build/protocolbuffers/js:v4.0.2
+    out: gen/js
+    opt: import_style=commonjs,binary
+  
+  # Node client and server stubs for gRPC
+  - remote: buf.build/grpc/node:v1.13.1
+    out: gen/js
+    opt: grpc_js

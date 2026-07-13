@@ -1,0 +1,26 @@
+{
+  "name": "grpc-node-setup-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/helloGourab/grpc-node-setup-template.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/helloGourab/grpc-node-setup-template/issues"
+  },
+  "homepage": "https://github.com/helloGourab/grpc-node-setup-template#readme",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.14.4",
+    "@grpc/proto-loader": "^0.8.0",
+    "google-protobuf": "^4.0.2"
+  }
+}

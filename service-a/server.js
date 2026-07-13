@@ -1,42 +1,48 @@
-import grpc from '@grpc/grpc-js';
-import protoLoader from '@grpc/proto-loader';
+import { createRequire } from 'module';
+import * as grpc from '@grpc/grpc-js';
 
-// Load A’s proto
-const packageDefA = protoLoader.loadSync('service-a.proto');
-const grpcObjectA = grpc.loadPackageDefinition(packageDefA);
-const demoA = grpcObjectA.demo;
+// Setup require to safely load the generated CommonJS files in ESM
+const require = createRequire(import.meta.url);
+const serviceA = require('../gen/js/service-a_grpc_pb.js');
+const messagesA = require('../gen/js/service-a_pb.js');
+const serviceB = require('../gen/js/service-b_grpc_pb.js'); 
+const messagesB = require('../gen/js/service-b_pb.js');
 
-// Load B’s proto for client
-const packageDefB = protoLoader.loadSync('../service-b/service-b.proto');
-const grpcObjectB = grpc.loadPackageDefinition(packageDefB);
-const demoB = grpcObjectB.demo;
-
-// Client for Service B
-const clientB = new demoB.ServiceB('localhost:50052', grpc.credentials.createInsecure());
+// Setup Client for Service B using generated stubs
+const clientB = new serviceB.ServiceBClient('localhost:50052', grpc.credentials.createInsecure());
 
 const server = new grpc.Server();
 
-server.addService(demoA.ServiceA.service, {
-  GetData: (call, callback) => {
-    const query = call.request.query;
+server.addService(serviceA.ServiceAService, {
+  // Lowercase 'g' to match the generated router schema
+  getData: (call, callback) => {
+    const query = call.request.getQuery();
     console.log(`[Service A] GetData called with: ${query}`);
-    callback(null, { result: `Service A responding with data for: ${query}` });
+    
+    // This will now successfully instantiate because require() loaded it perfectly
+    const response = new messagesA.DataResponse();
+    response.setResult(`Service A responding with data for: ${query}`);
+    callback(null, response);
   },
-  GetProcessedData: (call, callback) => {
-    const query = call.request.query;
-    console.log(`[Service A] Forwarding request to Service B: ${query}`);
+  
+  // Lowercase 'g' to match the generated router schema
+  getProcessedData: (call, callback) => {
+    const query = call.request.getQuery();
+    console.log(`[Service A] Forwarding to B: ${query}`);
 
-    clientB.ProcessData({ input: query }, (err, response) => {
-      if (err) {
-        console.error("Error from Service B:", err);
-        return callback(err, null);
-      }
-      callback(null, { result: `Service A got this from B: ${response.output}` });
+    const reqB = new messagesB.ProcessRequest();
+    reqB.setInput(query);
+
+    clientB.processData(reqB, (err, response) => {
+      if (err) return callback(err);
+      
+      const res = new messagesA.DataResponse();
+      res.setResult(`Service A got from B: ${response.getOutput()}`);
+      callback(null, res);
     });
   }
 });
 
 server.bindAsync('0.0.0.0:50051', grpc.ServerCredentials.createInsecure(), () => {
-  console.log("🚀 Service A running on port 50051");
-  server.start();
+  console.log("🚀 Service A running (Generated Types)");
 });

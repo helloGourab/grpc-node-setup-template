@@ -1,0 +1,4 @@
+version: v2
+modules:
+  - path: proto
+    name: buf.build/kitty-org-123/test-kitty-123
