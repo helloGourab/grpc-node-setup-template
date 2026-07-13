@@ -1,0 +1,6 @@
+version: v2
+plugins:
+  # Generates both the messages AND the Connect v2 services natively
+  - remote: buf.build/bufbuild/es:v2.12.1
+    out: gen/js
+    opt: target=js
