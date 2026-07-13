@@ -1,21 +1,20 @@
-import grpc from '@grpc/grpc-js';
-import protoLoader from '@grpc/proto-loader';
-
-const packageDef = protoLoader.loadSync('service-b.proto');
-const grpcObject = grpc.loadPackageDefinition(packageDef);
-const demo = grpcObject.demo;
+const grpc = require('@grpc/grpc-js');
+const serviceB = require('../gen/js/service-b_grpc_pb.js');
+const messagesB = require('../gen/js/service-b_pb.js');
 
 const server = new grpc.Server();
 
-server.addService(demo.ServiceB.service, {
-  ProcessData: (call, callback) => {
-    const input = call.request.input;
+server.addService(serviceB.ServiceBService, {
+  processData: (call, callback) => {
+    const input = call.request.getInput();
     console.log(`[Service B] Received: ${input}`);
-    callback(null, { output: `Processed: ${input.toUpperCase()}` });
+    
+    const response = new messagesB.ProcessResponse();
+    response.setOutput(`Processed: ${input.toUpperCase()}`);
+    callback(null, response);
   }
 });
 
 server.bindAsync('0.0.0.0:50052', grpc.ServerCredentials.createInsecure(), () => {
-  console.log("🚀 Service B running on port 50052");
-  server.start();
+  console.log("🚀 Service B running (Generated Types)");
 });

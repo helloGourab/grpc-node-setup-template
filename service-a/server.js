@@ -1,8 +1,4 @@
-import { createRequire } from 'module';
-import * as grpc from '@grpc/grpc-js';
-
-// Setup require to safely load the generated CommonJS files in ESM
-const require = createRequire(import.meta.url);
+const grpc = require('@grpc/grpc-js');
 const serviceA = require('../gen/js/service-a_grpc_pb.js');
 const messagesA = require('../gen/js/service-a_pb.js');
 const serviceB = require('../gen/js/service-b_grpc_pb.js'); 
@@ -19,7 +15,6 @@ server.addService(serviceA.ServiceAService, {
     const query = call.request.getQuery();
     console.log(`[Service A] GetData called with: ${query}`);
     
-    // This will now successfully instantiate because require() loaded it perfectly
     const response = new messagesA.DataResponse();
     response.setResult(`Service A responding with data for: ${query}`);
     callback(null, response);
